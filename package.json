@@ -1,18 +1,25 @@
 {
   "name": "bowling-game-score",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Node.js/MongoDB server application for calculating ten-frame bowling scores. It processes rolls, calculates scores with spare/strike handling",
   "main": "index.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "test": "NODE_ENV=test TEST_MONGODB_URI=mongodb://127.0.0.1:27017/BowlingScoresDB node --inspect ./node_modules/.bin/mocha 'tests/**/*.js'"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "mongoose": "^8.0.2",
-    "nodemon": "^3.0.1"
+    "mongoose": "^8.0.2"
+  },
+  "devDependencies": {
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "nodemon": "^3.0.1",
+    "sinon": "^17.0.1",
+    "supertest": "^6.3.3"
   }
 }
