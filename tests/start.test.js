@@ -1,7 +1,7 @@
 const request = require('supertest');
 const { expect } = require('chai');
 const mongoose = require('mongoose');
-const app = require('../../src/server');
+const app = require('../src/server');
 const gameRoutePrefix = '/api/game';
 
 describe('Start New Game Endpoint Tests', () => {

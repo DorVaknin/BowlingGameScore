@@ -1,8 +1,8 @@
 const request = require('supertest');
 const { expect } = require('chai');
 const mongoose = require('mongoose');
-const app = require('../../src/server');
-const testCases = require('../rollTestCases.json');
+const app = require('../src/server');
+const testCases = require('./rollTestCases.json');
 const { before } = require('mocha');
 const gameRoutePrefix = '/api/game';
 const rollEndpoint = `${gameRoutePrefix}/roll`
