@@ -1,0 +1,59 @@
+{
+  "OpenFrameTest": {
+    "describe": "Basic Scoring Tests",
+    "it": "should score 9 for an open frame with rolls of 4 and 5",
+    "inputs": {
+      "frame1": [4, 5]
+    },
+    "expected": {
+      "totalScore": 9,
+      "frameScore": 9
+    }
+  },
+  "SpareTest": {
+    "describe": "Basic Scoring Tests",
+    "it": "should score 10 for a spare with rolls of 7 and 3",
+    "inputs": {
+      "frame1": [7, 3]
+    },
+    "expected": {
+      "totalScore": 10,
+      "frameScore": 10
+    }
+  },
+  "StrikeTest": {
+    "describe": "Basic Scoring Tests",
+    "it": "should score 10 for a strike with a single roll of 10",
+    "inputs": {
+      "frame1": [10]
+    },
+    "expected": {
+      "totalScore": 10,
+      "frameScore": 10
+    }
+  },
+  "ConsecutiveStrikesTest": {
+    "describe": "Sequential Strikes and Spares",
+    "it": "should score 30 for consecutive strikes with rolls of 10 in two frames",
+    "inputs": {
+      "frame1": [10],
+      "frame2": [10]
+    },
+    "expected": {
+      "totalScore": 30,
+      "frameScore": [20, 10]
+    }
+  },
+  "ConsecutiveSparesTest": {
+    "describe": "Sequential Strikes and Spares",
+    "it": "should score 25 for consecutive spares with rolls of 5 and 5 in two frames",
+    "inputs": {
+      "frame1": [5, 5],
+      "frame2": [5, 5]
+    },
+    "expected": {
+      "totalScore": 25,
+      "frameScore": [15, 10]
+    }
+  }
+}

@@ -1,22 +1,21 @@
 
 const Game = require('../models/gameModel');
-const { updateCurrentFrame, calculateTotalScore, checkGameCompletion } = require('../utils/gameUtils');
+const { updateFrames, calculateTotalScore, checkGameCompletion } = require('../utils/gameUtils');
+const ErrorMappings = require('../utils/errorMappings');
 
 const recordRoll = async (gameId, pins) => {
   let game = await Game.findById(gameId);
   if (!game) {
-    throw new Error('Game not found');
+    throw new Error(ErrorMappings.Game_not_found);
   }
-
-  // Check if the game is already completed
   if (game.completed) {
-    throw new Error('Game already completed. No more rolls can be recorded.');
+    throw new Error(ErrorMappings.Game_already_completed_No_more_rolls_can_be_recorded);
   }
-  updateCurrentFrame(game, pins);
+  updateFrames(game, pins);
   game.currentScore = calculateTotalScore(game.frames);
   game.completed = checkGameCompletion(game);
 
-    await game.save();
+  await game.save();
 
   return game;
 };
