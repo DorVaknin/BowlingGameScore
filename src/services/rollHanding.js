@@ -12,7 +12,6 @@ const recordRoll = async (gameId, pins) => {
   if (game.completed) {
     throw new Error('Game already completed. No more rolls can be recorded.');
   }
-
   updateCurrentFrame(game, pins);
   game.currentScore = calculateTotalScore(game.frames);
   game.completed = checkGameCompletion(game);
