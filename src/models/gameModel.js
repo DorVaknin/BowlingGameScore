@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const logger = require('../utils/helpers').log;
 
 const frameSchema = new mongoose.Schema({
   rolls: [Number],
@@ -14,5 +15,9 @@ const gameSchema = new mongoose.Schema({
     currentScore: { type: Number, default: 0 },
     completed: { type: Boolean, default: false }
   });
+
+  gameSchema.pre('save', function() {
+    logger(`Saving game: ${this._id}`);
+});
 
 module.exports = mongoose.model('Game', gameSchema);

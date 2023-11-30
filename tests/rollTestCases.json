@@ -55,5 +55,27 @@
       "totalScore": 25,
       "frameScore": [15, 10]
     }
+  },
+  "StrikeInAllFramesTest": {
+    "describe": "Tenth Frame Specific Scenarios",
+    "it": "should score all as strikes and have 300 as the end totalScore",
+    "inputs": {
+      "frame10": [10, 10, 10]
+    },
+    "expected": {
+      "totalScore": 300,
+      "frameScore": 30
+    }
+  },
+  "StrikeInTenthFrameOnlyTest": {
+    "describe": "Tenth Frame Specific Scenarios",
+    "it": "should score 30 in the 10th frame for a strike followed by two additional rolls",
+    "inputs": {
+      "frame10": [10, 10, 10]
+    },
+    "expected": {
+      "totalScore": 111,
+      "frameScore": 30
+    }
   }
 }

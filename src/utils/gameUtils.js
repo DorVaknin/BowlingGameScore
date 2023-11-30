@@ -20,7 +20,7 @@ const findCurrentFrameIndex = (game) => {
       return hasNoRolls(frame) || hasOneRoll(frame) || (hasTwoRolls(frame) && (isStrike(frame) || isSpare(frame)));
     }
 
-    return false; // (should not be reached)
+    return false; //unreachable
   });
 };
 
@@ -30,12 +30,12 @@ const calculateFramesScore = (frame, frames) => {
 };
 
 const updatePreviousFrameScores = (frames) => {
-  for (let i = 0; i < frames.length - 1; i++) { // Iterate up to the second-to-last frame
+  for (let i = 0; i < frames.length - 1; i++) {
     let frame = frames[i];
     if (isStrike(frame) || isSpare(frame)) {
       let additionalRollsNeeded = isStrike(frame) ? 2 : 1;
       let additionalScore = scoreOfNextRolls(frames, i, additionalRollsNeeded);
-      frame.frameScore = MAX_PINS_IN_A_FRAME + additionalScore; // Update the score of the frame
+      frame.frameScore = MAX_PINS_IN_A_FRAME + additionalScore;
     }
   }
 };

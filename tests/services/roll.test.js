@@ -27,7 +27,6 @@ describe('Record roll Endpoint Tests', () => {
                 expect(totalScore).to.equal(testCases.OpenFrameTest.expected.totalScore);
             });
         });
-
          describe(`${testCases.SpareTest.describe}`, () => {
             let gameId;
             before(async () => {
@@ -110,6 +109,67 @@ describe('Record roll Endpoint Tests', () => {
                 expect(totalScore).to.equal(testCases.ConsecutiveSparesTest.expected.totalScore);
             });
         });
+
+        describe(`${testCases.StrikeInAllFramesTest.describe}`, () => {
+            let gameId;
+            before(async () => {
+                await cleanDb;
+                gameId = await getGameId();
+                for (let frame = 1; frame <= 9; frame++) {
+                    await request(app)
+                        .post(rollEndpoint)
+                        .send({ gameId: gameId, pins: 10 });
+                }
+                await request(app)
+                    .post(rollEndpoint)
+                    .send({ gameId: gameId, pins: testCases.StrikeInAllFramesTest.inputs.frame10[0] });
+                await request(app)
+                    .post(rollEndpoint)
+                    .send({ gameId: gameId, pins: testCases.StrikeInAllFramesTest.inputs.frame10[1] });
+                res = await request(app)
+                    .post(rollEndpoint)
+                    .send({ gameId: gameId, pins: testCases.StrikeInAllFramesTest.inputs.frame10[2] });
+            });
+            it(`${testCases.StrikeInAllFramesTest.it}`, async () => {
+                let frameScore = res._body.frames[9].frameScore;
+                let totalScore = res._body.currentScore;
+                expect(frameScore).to.equal(testCases.StrikeInAllFramesTest.expected.frameScore);
+                expect(totalScore).to.equal(testCases.StrikeInAllFramesTest.expected.totalScore);
+            });
+        });
+
+        describe(`${testCases.StrikeInTenthFrameOnlyTest.describe}`, () => {
+            let gameId;
+            before(async () => {
+                await cleanDb;
+                gameId = await getGameId();
+                for (let frame = 1; frame <= 9; frame++) {
+                    await request(app)
+                        .post(rollEndpoint)
+                        .send({ gameId: gameId, pins: 4 });
+                    await request(app)
+                        .post(rollEndpoint)
+                        .send({ gameId: gameId, pins: 5 });
+                }
+                await request(app)
+                    .post(rollEndpoint)
+                    .send({ gameId: gameId, pins: testCases.StrikeInTenthFrameOnlyTest.inputs.frame10[0] });
+                await request(app)
+                    .post(rollEndpoint)
+                    .send({ gameId: gameId, pins: testCases.StrikeInTenthFrameOnlyTest.inputs.frame10[1] });
+                res = await request(app)
+                    .post(rollEndpoint)
+                    .send({ gameId: gameId, pins: testCases.StrikeInTenthFrameOnlyTest.inputs.frame10[2] });
+            });
+            it(`${testCases.StrikeInTenthFrameOnlyTest.it}`, async () => {
+                let frameScore = res._body.frames[9].frameScore;
+                let totalScore = res._body.currentScore;
+                expect(frameScore).to.equal(testCases.StrikeInTenthFrameOnlyTest.expected.frameScore);
+                expect(totalScore).to.equal(testCases.StrikeInTenthFrameOnlyTest.expected.totalScore);
+            });
+        });
+
+
     });
 });
 

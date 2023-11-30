@@ -3,13 +3,13 @@ const { expect } = require('chai');
 const mongoose = require('mongoose');
 const app = require('../../src/server');
 const gameRoutePrefix = '/api/game';
+
 describe('Start New Game Endpoint Tests', () => {
     beforeEach(async () => {
         await cleanDb();
     });
     describe('Creating new game', () => {
         let gameId;
-        // Test for starting a new game
         it('POST /start - Start a new game', async () => {
             const res = await request(app)
                 .post(`${gameRoutePrefix}/start`)
