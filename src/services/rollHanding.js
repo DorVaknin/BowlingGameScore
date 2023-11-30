@@ -14,8 +14,9 @@ const recordRoll = async (gameId, pins) => {
   }
 
   updateCurrentFrame(game, pins);
-  game.currentScore = calculateTotalScore(game);
+  game.currentScore = calculateTotalScore(game.frames);
   game.completed = checkGameCompletion(game);
+
     await game.save();
 
   return game;

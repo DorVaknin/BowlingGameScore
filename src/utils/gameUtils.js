@@ -1,101 +1,70 @@
-
 const updateCurrentFrame = (game, pins) => {
-  let frameIndex = game.frames.findIndex(frame => frame.rolls.length < 2 || frame.isTenthFrame);
-  let frame = game.frames[frameIndex];
-
+  const frameIndex = findCurrentFrameIndex(game);
+  const frame = game.frames[frameIndex];
   frame.rolls.push(pins);
-
-  // Special handling for the tenth frame
-  handleTenthFrame(frameIndex, frame);
+  frame.frameScore = calculateFrameScore(frame, game.frames, frameIndex);
 };
 
-const handleTenthFrame = (frameIndex, frame) => {
-  if (isTenthFrame(frameIndex)) {
-      if (isStrikeOnFirstRollOfLastFrame(frameIndex, frame)) {
-        // Allow two more rolls if the first roll is a strike //TODO
-        frame.isTenthFrame = true;
-      } else if (isSpareOnFirstTwoRollsOfLastFrame(frame, pins)) {
-        // Allow one more roll if there is a spare //TODO
-        frame.isTenthFrame = true;
-      }
+const findCurrentFrameIndex = (game) => {
+  return game.frames.findIndex((frame, index) => {
+    const isEarlyFrame = index < 9;
+    const isTenthFrame = index === 9;
+    const hasNoRolls = frame.rolls.length === 0;
+    const hasOneRoll = frame.rolls.length === 1;
+    const hasTwoRolls = frame.rolls.length === 2;
+    const isStrike = frame.rolls[0] === 10;
+    const isSpare = hasTwoRolls && (frame.rolls[0] + frame.rolls[1] === 10);
+
+    if (isEarlyFrame) {
+      return hasNoRolls || hasOneRoll; // Early frames are incomplete with only one roll
     }
-}
 
-const isSpareOnFirstTwoRollsOfLastFrame = (frame, pins) => {
-  return frame.rolls.length === 2 && isSpare(frame.rolls);
-}
-
-const isStrikeOnFirstRollOfLastFrame = (frame, pins) => {
-  return frame.rolls.length === 1 && isStrike(pins);
-}
-
-const isStrike = (pins) => {
-  return pins === 10;
-}
-
-const isSpare = (rolls) => {
-  return rolls[0] + rolls[1] >= 10;
-}
-
-
-const isTenthFrame = (frameIndex) => {
-  return frameIndex === 9;
-}
-
-
-const calculateTotalScore = (game) => {
-  let totalScore = 0;
-  game.frames.forEach((frame, index) => {
-    let frameScore = 0;
-    if (isStrike(frame.rolls[0])) {
-      frameScore += 10 + getNextTwoRollsScore(game, index);
-    } else if (isSpare(frame.rolls)) {
-      frameScore += 10 + (game.frames[index + 1]?.rolls[0] || 0);
-    } else {
-      frameScore += frame.rolls.reduce((a, b) => a + b, 0);
+    if (isTenthFrame) {
+      return hasNoRolls || hasOneRoll || (hasTwoRolls && (isStrike || isSpare));
+      // Tenth frame is incomplete with one roll, or two rolls if one is a strike or they add up to a spare
     }
-    totalScore += frameScore;
+
+    return false; // (should not be reached)
   });
-  return totalScore;
 };
 
-const getNextTwoRollsScore = (game, frameIndex) => {
-  const nextFrame = game.frames[frameIndex + 1];
-  const frameAfterNext = game.frames[frameIndex + 2];
-
-  if (nextFrame && nextFrame.rolls[0] === 10) {
-      // Next frame is a strike
-      return nextFrameStrike(frameIndex, nextFrame, frameAfterNext);
-  } else if (nextFrame) {
-      // Next frame is not a strike
-      return nextFrameNotStrike(nextFrame);
+const calculateFrameScore = (frame, frames, frameIndex) => {
+  if (isStrike(frame)) {
+    return 10 + scoreOfNextRolls(frames, frameIndex, 2);
+  } else if (isSpare(frame)) {
+    return 10 + scoreOfNextRolls(frames, frameIndex, 1);
   }
-  
-  // No next frame or incomplete next frame
-  return 0;
+  return sumOfRolls(frame.rolls);
 };
 
-const nextFrameNotStrike = (nextFrame) => {
-  if (nextFrame && nextFrame.rolls.length > 1) {
-      return nextFrame.rolls[0] + nextFrame.rolls[1];
+const isStrike = (frame) => frame.rolls[0] === 10;
+const hasTwoRolls = (frame) => frame.rolls.length === 2;
+const isSpare = (frame) => hasTwoRolls(frame) && sumOfRolls(frame.rolls) === 10;
+const sumOfRolls = (rolls) => rolls.reduce((sum, pins) => sum + pins, 0);
+
+const scoreOfNextRolls = (frames, frameIndex, rollsCount) => {
+  let score = 0, rollsFound = 0;
+  for (let i = frameIndex + 1; i < frames.length && rollsFound < rollsCount; i++) {
+    frames[i].rolls.forEach(roll => {
+      if (rollsFound < rollsCount) {
+        score += roll;
+        rollsFound++;
+      }
+    });
   }
-  return 0; // If the next frame doesn't have two rolls
+  return score;
 };
 
-
-const nextFrameStrike = (frameIndex, nextFrame, frameAfterNext) => {
-  if (frameIndex === 8) { // Special case for the 9th frame
-      return nextFrame.rolls[0] + (nextFrame.rolls[1] || 0);
-  } else { // General case for frames before the 9th
-      return nextFrame.rolls[0] + (frameAfterNext?.rolls[0] || 0);
-  }
-};
-
+const calculateTotalScore = (frames) => frames.reduce((total, frame) => total + frame.frameScore, 0);
 
 const checkGameCompletion = (game) => {
-const lastFrame = game.frames[9];
-return lastFrame.rolls.length === 3 || (lastFrame.rolls.length === 2 && lastFrame.rolls[0] !== 10 && lastFrame.rolls[0] + lastFrame.rolls[1] !== 10);
+  const lastFrame = game.frames[9];
+  return isCompleteFrame(lastFrame);
 };
-  
-  module.exports = { updateCurrentFrame, calculateTotalScore, checkGameCompletion };
-  
+
+const isCompleteFrame = (frame) => {
+  if (isStrike(frame) || isSpare(frame)) return frame.rolls.length === 3;
+  return frame.rolls.length === 2;
+};
+
+module.exports = { updateCurrentFrame, calculateTotalScore, checkGameCompletion };
